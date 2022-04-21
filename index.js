@@ -5,7 +5,6 @@ const app = express();
 const port = 7676;
 
 app.use(express.json());
-app.use(express.urlencoded());
 app.use(routers);
 
 app.listen(port, (() => {

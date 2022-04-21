@@ -53,10 +53,45 @@ routers.get('/pengguna/:id', async (req, res) => {
   res.json(response);
 });
 
-routers.post('/pengguna', (req, res) => {
-  const { nama } = req.body;
-  console.log(req.body);
-  res.send(`data yg anda kirim nama : ${nama}`);
+routers.post('/pengguna', async (req, res) => {
+  const { nama, umur, menikah, anak } = req.body;
+
+  const db = client.db('latihan');
+
+  const response = {
+    success: true,
+    message: `Berhasil Input 1 pengguna ${nama}`,
+    data: req.body
+  };
+
+
+
+  if (Object.keys(req.body).length < 4) {
+    response.success = false;
+    response.message = 'Data Pengguna gagal ditambahkan';
+  }
+  else {
+    try {
+      const inputPengguna = await db.collection('pengguna').insertOne({
+        "nama": nama,
+        "umur": umur,
+        "menikah": menikah,
+        "anak": anak
+      });
+
+      console.log("yang terinput", inputPengguna.insertedId);
+
+      if (!inputPengguna.insertedId) {
+        response.success = false;
+        response.message = 'Data Pengguna gagal ditambahkan'
+      }
+    } catch (error) {
+      response.success = false;
+      response.message = 'Data Pengguna gagal ditambahkan'
+    }
+  }
+
+  res.json(response);
 });
 
 routers.delete('/pengguna/:id', (req, res) => {
