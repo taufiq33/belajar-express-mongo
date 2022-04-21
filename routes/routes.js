@@ -100,8 +100,34 @@ routers.post('/pengguna', async (req, res) => {
   res.json(response);
 });
 
-routers.delete('/pengguna/:id', (req, res) => {
-  res.send(`menghapus pengguna ber id ${req.params.id}`);
+routers.delete('/pengguna/:id', async (req, res) => {
+  const id = req.params.id;
+
+  const db = client.db('latihan');
+
+  const response = {
+    success: true,
+    message: `Berhasil hapus 1 pengguna ${id}`,
+    data: req.body
+  };
+
+  try {
+    const deletePengguna = await db.collection('pengguna').deleteOne(
+      { _id: ObjectId(id) }
+    );
+
+    console.log("yang terdelete ", deletePengguna.deletedCount);
+
+    if (deletePengguna.deletedCount < 1) {
+      response.success = false;
+      response.message = 'Data Pengguna gagal di delete';
+    }
+  } catch (error) {
+    response.success = false;
+    response.message = 'Data Pengguna gagal di delete';
+  }
+
+  res.json(response);
 });
 
 routers.put('/pengguna/:id', async (req, res) => {
