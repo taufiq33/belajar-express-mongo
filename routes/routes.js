@@ -8,6 +8,12 @@ client.on('connectionReady', () => {
   console.log('berhasil terkoneksi');
 });
 
+const isSet = (data) => {
+  if (data === undefined) return false;
+  if (data === null) return false;
+  return true;
+}
+
 routers.get('/pengguna', async (req, res) => {
   const db = client.db('latihan');
   const pengguna = await db.collection('pengguna').find().toArray();
@@ -98,8 +104,52 @@ routers.delete('/pengguna/:id', (req, res) => {
   res.send(`menghapus pengguna ber id ${req.params.id}`);
 });
 
-routers.put('/pengguna/:id', (req, res) => {
-  res.send(`Mengedit pengguna ber id ${req.params.id}`);
+routers.put('/pengguna/:id', async (req, res) => {
+  const { nama, umur, menikah, anak } = req.body;
+  const id = req.params.id;
+
+  const db = client.db('latihan');
+
+  const response = {
+    success: true,
+    message: `Berhasil Edit 1 pengguna ${id}`,
+    data: req.body
+  };
+
+
+  if (Object.keys(req.body).length < 1) {
+    response.success = false;
+    response.message = 'Data Pengguna gagal di edit';
+  } else if (!id) {
+    response.success = false;
+    response.message = 'Data Pengguna gagal di edit';
+  }
+  else {
+    const dataObjectToUpdate = {};
+
+    Object.keys(req.body).forEach((item) => {
+      dataObjectToUpdate[item] = req.body[item];
+    });
+
+    try {
+      const editPengguna = await db.collection('pengguna').updateOne(
+        { _id: ObjectId(id) },
+        { $set: dataObjectToUpdate }
+      );
+
+      console.log("yang teredit ", editPengguna.matchedCount);
+
+      if (editPengguna.matchedCount < 1) {
+        response.success = false;
+        response.message = 'Data Pengguna gagal di edit';
+      }
+    } catch (error) {
+      response.success = false;
+      response.message = 'Data Pengguna gagal di edit';
+    }
+  }
+
+  res.json(response);
 });
 
 module.exports = routers;
