@@ -131,7 +131,7 @@ routers.delete('/pengguna/:id', async (req, res) => {
 });
 
 routers.put('/pengguna/:id', async (req, res) => {
-  const { nama, umur, menikah, anak } = req.body;
+  const keys = ['nama', 'umur', 'menikah', 'anak'];
   const id = req.params.id;
 
   const db = client.db('latihan');
@@ -142,6 +142,16 @@ routers.put('/pengguna/:id', async (req, res) => {
     data: req.body
   };
 
+  const checkInputUserKeys = () => {
+    let returnValue = true;
+    Object.keys(req.body).forEach(item => {
+      if (!keys.includes(item)) {
+        returnValue = false;
+      }
+    })
+    return returnValue;
+  }
+
 
   if (Object.keys(req.body).length < 1) {
     response.success = false;
@@ -149,18 +159,21 @@ routers.put('/pengguna/:id', async (req, res) => {
   } else if (!id) {
     response.success = false;
     response.message = 'Data Pengguna gagal di edit';
+  } else if (!checkInputUserKeys()) {
+    response.success = false;
+    response.message = 'Data Pengguna gagal di edit';
   }
   else {
-    const dataObjectToUpdate = {};
+    // const dataObjectToUpdate = {};
 
-    Object.keys(req.body).forEach((item) => {
-      dataObjectToUpdate[item] = req.body[item];
-    });
+    // Object.keys(req.body).forEach((item) => {
+    //   dataObjectToUpdate[item] = req.body[item];
+    // });
 
     try {
       const editPengguna = await db.collection('pengguna').updateOne(
         { _id: ObjectId(id) },
-        { $set: dataObjectToUpdate }
+        { $set: req.body }
       );
 
       console.log("yang teredit ", editPengguna.matchedCount);
