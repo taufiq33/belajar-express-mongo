@@ -66,4 +66,25 @@ routers.post('/products', async (req, res) => {
   }
 });
 
+routers.delete('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  const deleteProduct = await ProductModel.deleteOne({
+    "_id": id,
+  });
+
+  if (deleteProduct.deletedCount === 1) {
+    res.send({
+      status: 'success',
+      message: `1 produk dg id ${id} berhasil dihapus`,
+      data: deleteProduct,
+    });
+  } else {
+    res.send({
+      status: 'failed',
+      message: `1 produk dg id ${id} gagal dihapus`,
+      data: deleteProduct,
+    });
+  }
+});
+
 module.exports = routers;
