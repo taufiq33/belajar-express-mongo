@@ -43,4 +43,27 @@ routers.get('/products/:id', async (req, res) => {
   }
 });
 
+routers.post('/products', async (req, res) => {
+  const { name, price, stock, status } = req.body;
+  const newProductObject = {
+    name, price, stock,
+    status: status === undefined ? true : status
+  }
+  const insertNewProduct = await ProductModel.create(newProductObject);
+
+  if (insertNewProduct) {
+    res.send({
+      status: 'success',
+      message: 'Berhasil menambah produk',
+      data: insertNewProduct
+    });
+  } else {
+    res.send({
+      status: 'failed',
+      message: 'Gagal menambah produk',
+      data: {}
+    });
+  }
+});
+
 module.exports = routers;
