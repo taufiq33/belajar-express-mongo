@@ -16,11 +16,31 @@ routers.get('/products', async (req, res) => {
     })
   } else {
     res.send({
-      status: 'success',
+      status: 'failed',
       message: 'daftar produk kosong',
       data: [],
     })
   }
-})
+});
+
+routers.get('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  const singleProduct = await ProductModel.findOne({
+    "_id": id,
+  });
+  if (singleProduct) {
+    res.send({
+      status: 'success',
+      message: `1 produk dg id ${id} berhasil ditemukan`,
+      data: singleProduct,
+    });
+  } else {
+    res.send({
+      status: 'failed',
+      message: `1 produk dg id ${id} tidak ditemukan`,
+      data: {},
+    });
+  }
+});
 
 module.exports = routers;
