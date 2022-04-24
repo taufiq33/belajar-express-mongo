@@ -1,22 +1,30 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 
 const username = 'taufiqkalilika';
 const password = 'passwordnyarahasia';
 const server = '127.0.0.1:27017';
 const authSource = 'admin';
+const databaseName = 'latihan';
 
-const connectionString = `mongodb://${username}:${password}@${server}?authSource=${authSource}`;
+const connectionString = `mongodb://${username}:${password}@${server}/${databaseName}?authSource=${authSource}`;
 
-const client = new MongoClient(connectionString, {
-  useUnifiedTopology: true,
-});
-
-(async () => {
+const connectToMongoDb = async () => {
   try {
-    await client.connect();
+    mongoose.connect(connectionString, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    const db = mongoose.connection;
+    db.on('connected', () => {
+      console.log('berhasil connect ke DB');
+      return db;
+    })
   } catch (error) {
-    console.error(error);
+    console.error(`errornya karena ${error}`);
+    throw new Error(error);
   }
-})();
+}
 
-module.exports = client;
+module.exports = {
+  connect: connectToMongoDb
+};
