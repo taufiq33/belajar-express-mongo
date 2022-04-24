@@ -7,7 +7,7 @@ const authSource = 'admin';
 const databaseName = 'latihan';
 
 const connectionString = `mongodb://${username}:${password}@${server}/${databaseName}?authSource=${authSource}`;
-
+console.log(connectionString);
 const connectToMongoDB = async () => {
   try {
     mongoose.connect(connectionString, {
