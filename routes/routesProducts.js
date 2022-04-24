@@ -87,4 +87,50 @@ routers.delete('/products/:id', async (req, res) => {
   }
 });
 
+routers.put('/products/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updateProduct = await ProductModel.updateOne(
+      { "_id": id },
+      { $set: req.body },
+      { runValidators: true }
+    )
+    if (updateProduct.modifiedCount === 1) {
+      res.send({
+        status: 'success',
+        message: `1 produk dg id ${id} berhasil diedit`,
+        data: updateProduct,
+      });
+    } else {
+      res.send({
+        status: 'failed',
+        message: `1 produk dg id ${id} gagal diedit`,
+        data: updateProduct,
+      });
+    }
+  } catch (error) {
+    console.log(`Error nya karena ${error}`);
+    res.send({
+      status: 'failed',
+      message: `1 produk dg id ${id} gagal diedit`,
+      data: {},
+    });
+  }
+
+  if (deleteProduct.deletedCount === 1) {
+    res.send({
+      status: 'success',
+      message: `1 produk dg id ${id} berhasil dihapus`,
+      data: deleteProduct,
+    });
+  } else {
+    res.send({
+      status: 'failed',
+      message: `1 produk dg id ${id} gagal dihapus`,
+      data: deleteProduct,
+    });
+  }
+});
+
 module.exports = routers;
